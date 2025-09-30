@@ -1,0 +1,67 @@
+# ---- Node / Next.js ----
+frontend/node_modules/
+frontend/.next/
+frontend/.vercel/
+frontend/out/
+frontend/.turbo/
+frontend/.cache/
+
+# Env files (keep examples tracked)
+frontend/.env*
+!frontend/.env.example
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# ---- Python / FastAPI ----
+backend/.venv/
+.venv/
+venv/
+ENV/
+
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Distribution / packaging
+build/
+dist/
+.eggs/
+*.egg-info/
+.installed.cfg
+
+# Testing / coverage
+.pytest_cache/
+.coverage*
+htmlcov/
+.tox/
+.mypy_cache/
+.env
+# Local environment
+.env
+.env.*
+!.env.example
+.python-version
+
+# SQLAlchemy or alembic caches (if any)
+**/alembic.ini
+**/alembic/versions/*.pyc
+
+# ---- OS / Editors ----
+.DS_Store
+Thumbs.db
+
+# Editor settings
+.vscode/
+.idea/
+*.code-workspace
+
+# Misc
+*.log
+*.swp
+*.swo
+*.tmp
+

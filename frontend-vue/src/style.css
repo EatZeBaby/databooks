@@ -1,0 +1,71 @@
+:root {
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Noto Sans, Ubuntu, Cantarell, Helvetica Neue, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+  line-height: 1.5;
+  font-weight: 400;
+  color-scheme: light;
+  color: #0B2026; /* Navy 900 */
+  background-color: #F9F7F4; /* Oat Light */
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+
+  /* Theme variables */
+  --color-primary: #FF3621; /* Lava 600 */
+
+  /* Surfaces & borders */
+  --bg-default: #F9F7F4; /* page bg */
+  --bg-surface: #FFFFFF; /* cards, sidebars */
+  --border-color: rgba(0,0,0,0.08);
+  --text-muted: #5b6b73;
+}
+
+/* Dark mode root overrides (applied when data-theme="dark" on <html>) */
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  color: #EEEDE9; /* Oat Medium */
+  background-color: #0B2026; /* Navy 900 */
+  --bg-default: #0B2026;
+  --bg-surface: #12343b; /* slightly lighter than page bg for contrast */
+  --border-color: rgba(255,255,255,0.12);
+  --text-muted: rgba(238,237,233,0.72);
+}
+
+/* Theme palettes (applied via data-palette on <html>) */
+:root[data-palette="default"] { --color-primary: #2563eb; }
+:root[data-palette="teal"] { --color-primary: #0d9488; }
+:root[data-palette="purple"] { --color-primary: #7c3aed; }
+:root[data-palette="orange"] { --color-primary: #f97316; }
+:root[data-palette="rose"] { --color-primary: #e11d48; }
+
+a { color: var(--color-primary); text-decoration: none; }
+
+/* Ensure page background follows theme */
+body { background-color: inherit !important; color: inherit; }
+#app { background-color: inherit; }
+
+/* Naive UI surface alignment */
+.n-card {
+  background: var(--bg-surface);
+  border-color: var(--border-color);
+}
+.n-list { background: transparent; }
+.n-list-item {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+}
+.n-page-header { border-bottom: 1px solid var(--border-color); }
+.n-thing .n-thing-header__title { color: inherit; }
+.n-thing .n-thing-header__description { color: var(--text-muted); }
+
+/* Force strong foreground on surface elements in dark mode */
+:root[data-theme="dark"] .sidebar,
+:root[data-theme="dark"] .nav,
+:root[data-theme="dark"] .n-card,
+:root[data-theme="dark"] .n-list-item {
+  color: #EEEDE9;
+}
+
+body { margin: 0; min-width: 320px; }
+
+#app { min-height: 100vh; }

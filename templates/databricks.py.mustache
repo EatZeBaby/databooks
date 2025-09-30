@@ -1,0 +1,15 @@
+from pyspark.sql import SparkSession
+
+spark = SparkSession.builder.getOrCreate()
+
+(
+    spark.read
+    .format("{{source.format}}")
+    .load("{{source.path}}")
+    .write
+    .format("delta")
+    .mode("append")
+    .save("{{target.mount}}/{{target.path}}")
+)
+
+

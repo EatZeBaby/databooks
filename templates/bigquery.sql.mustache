@@ -1,0 +1,9 @@
+-- External table over {{source.path}}
+CREATE OR REPLACE EXTERNAL TABLE `{{target.project}}.{{target.dataset}}.{{target.table}}`
+WITH PARTITION COLUMNS
+OPTIONS (
+  format = '{{source.format}}',
+  uris = ['{{source.path}}/*']
+);
+
+

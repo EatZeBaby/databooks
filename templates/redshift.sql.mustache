@@ -1,0 +1,7 @@
+-- COPY from S3 to {{target.schema}}.{{target.table}}
+COPY {{target.schema}}.{{target.table}}
+FROM '{{source.path}}'
+IAM_ROLE '{{target.iam_role}}'
+FORMAT AS {{source.format | upper}};
+
+

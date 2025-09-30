@@ -1,0 +1,93 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html, body, #__next { height: 100%; }
+body { background-color: var(--oat-light); color: var(--navy); }
+
+:root {
+  /* Databricks brand palette */
+  --primary: #FF3621; /* Lava 600 */
+  --accent: #FF3621;  /* Use Lava for accents */
+  --navy: #0B2026;    /* Navy 900 */
+  --oat-medium: #EEEDE9;
+  --oat-light: #F9F7F4;
+  --white: #ffffff;
+  /* Semantic */
+  --success: #16a34a;
+  --info: #0891b2;
+  --warning: #d97706;
+  --danger: #dc2626;
+}
+
+.dark body { @apply bg-gray-900 text-gray-100; }
+.dark header { @apply bg-gray-950 border-gray-800; }
+/* Minimal dark theming for white cards and borders */
+.dark .bg-white { background-color: #111827 !important; }
+.dark .bg-gray-50 { background-color: #0f172a !important; }
+.dark .border { border-color: #374151 !important; }
+
+/* Improve code/JSON readability in dark mode */
+.dark pre { background-color: #1f2937 !important; color: #e5e7eb !important; }
+
+/* Elevate gray text in dark mode for readability */
+.dark .text-gray-600 { color: #cbd5e1 !important; }
+.dark .text-gray-500 { color: #d1d5db !important; }
+.dark .text-gray-700 { color: #e5e7eb !important; }
+
+/* Improve form controls readability in dark mode */
+.dark input,
+.dark select,
+.dark textarea {
+  background-color: #111827 !important; /* slate-900 */
+  color: #e5e7eb !important; /* gray-200 */
+  border-color: #374151 !important; /* gray-700 */
+}
+.dark input::placeholder,
+.dark textarea::placeholder { color: #9ca3af !important; }
+.dark label { color: #e5e7eb !important; }
+.dark .bg-white input,
+.dark .bg-white select,
+.dark .bg-white textarea { background-color: #0f172a !important; }
+
+.btn-primary { background: var(--primary); color: #fff; }
+.badge-accent { background: var(--accent); color: #fff; }
+
+/* Badges and chips */
+.badge { display: inline-flex; align-items: center; gap: 6px; padding: 2px 8px; border-radius: 9999px; font-size: 12px; line-height: 1.1; border: 1px solid rgba(0,0,0,0.06); }
+.badge-success { background: rgba(22,163,74,.12); color: #16a34a; border-color: rgba(22,163,74,.25); }
+.badge-info { background: rgba(8,145,178,.12); color: #0891b2; border-color: rgba(8,145,178,.25); }
+.badge-warning { background: rgba(217,119,6,.12); color: #d97706; border-color: rgba(217,119,6,.25); }
+.badge-danger { background: rgba(220,38,38,.12); color: #dc2626; border-color: rgba(220,38,38,.25); }
+.chip { background: rgba(124,58,237,.14); color: #c4b5fd; border: 1px solid rgba(124,58,237,.35); padding: 2px 8px; border-radius: 8px; font-size: 12px; }
+
+.dark .badge { border-color: rgba(255,255,255,0.08); }
+.dark .badge-success { background: rgba(22,163,74,.18); color: #34d399; border-color: rgba(22,163,74,.35); }
+.dark .badge-info { background: rgba(8,145,178,.18); color: #67e8f9; border-color: rgba(8,145,178,.35); }
+.dark .badge-warning { background: rgba(217,119,6,.18); color: #fbbf24; border-color: rgba(217,119,6,.35); }
+.dark .badge-danger { background: rgba(220,38,38,.18); color: #fca5a5; border-color: rgba(220,38,38,.35); }
+.dark .chip { background: rgba(124,58,237,.22); color: #ddd6fe; border-color: rgba(124,58,237,.45); }
+
+/* Focus-visible styles for accessibility */
+a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}
+
+/* Surface styling: subtle gradients and consistent shadows */
+.surface {
+  background: linear-gradient(180deg, var(--white), var(--oat-light));
+  box-shadow: 0 1px 2px rgba(11,32,38,0.08), 0 6px 12px rgba(11,32,38,0.10);
+  border-radius: 12px;
+}
+.dark .surface {
+  background: linear-gradient(180deg, #0b1a20, #0f2430);
+  box-shadow: 0 1px 2px rgba(0,0,0,0.6), 0 8px 16px rgba(0,0,0,0.5);
+}
+
+/* Upgrade generic white card surfaces to use surface styling by default */
+.surface-upgrade { border-radius: 12px !important; }
+.bg-white.border.rounded { border-radius: 12px; }
+.bg-white.border.rounded.surface, .dark .bg-white.border.rounded.surface { /* specificity helper */ }
+
+

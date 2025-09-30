@@ -1,0 +1,408 @@
+openapi: 3.1.0
+info:
+  title: DataMesh Social API
+  version: 0.1.0
+  description: REST API for dataset discovery, connect rendering, connectors, and feed.
+servers:
+  - url: https://api.databooks.local
+    description: Dev server
+tags:
+  - name: Datasets
+  - name: Connectors
+  - name: Feed
+  - name: Users
+  - name: Search
+security:
+  - oauth2: ["openid", "profile", "email"]
+paths:
+  /api/v1/datasets:
+    get:
+      tags: [Datasets]
+      summary: Search and list datasets
+      parameters:
+        - in: query
+          name: query
+          schema: { type: string }
+        - in: query
+          name: owner_id
+          schema: { type: string, format: uuid }
+        - in: query
+          name: org_id
+          schema: { type: string, format: uuid }
+        - in: query
+          name: tags
+          schema:
+            type: array
+            items: { type: string }
+          style: form
+          explode: false
+        - in: query
+          name: platform
+          schema: { $ref: "#/components/schemas/PlatformType" }
+        - in: query
+          name: visibility
+          schema: { $ref: "#/components/schemas/Visibility" }
+        - in: query
+          name: page
+          schema: { type: integer, minimum: 1, default: 1 }
+        - in: query
+          name: per_page
+          schema: { type: integer, minimum: 1, maximum: 200, default: 20 }
+      responses:
+        "200":
+          description: Paginated list of datasets
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/PaginatedDatasets" }
+    post:
+      tags: [Datasets]
+      summary: Publish dataset
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/DatasetCreate" }
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Dataset" }
+  /api/v1/datasets/{id}:
+    get:
+      tags: [Datasets]
+      summary: Get dataset profile
+      parameters:
+        - $ref: "#/components/parameters/IdPathParam"
+      responses:
+        "200":
+          description: Dataset profile
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Dataset" }
+    patch:
+      tags: [Datasets]
+      summary: Edit dataset metadata
+      parameters:
+        - $ref: "#/components/parameters/IdPathParam"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/DatasetUpdate" }
+      responses:
+        "200":
+          description: Updated dataset
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Dataset" }
+  /api/v1/datasets/{id}/connect:
+    post:
+      tags: [Datasets]
+      summary: Render connect artifact for current user
+      parameters:
+        - $ref: "#/components/parameters/IdPathParam"
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/ConnectRequest" }
+      responses:
+        "200":
+          description: Platform-specific connect payload
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ConnectResponse" }
+  /api/v1/datasets/{id}/refresh:
+    post:
+      tags: [Datasets]
+      summary: Trigger dataset refresh job
+      parameters:
+        - $ref: "#/components/parameters/IdPathParam"
+      responses:
+        "202":
+          description: Refresh job accepted
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/JobAccepted" }
+  /api/v1/connectors:
+    get:
+      tags: [Connectors]
+      summary: List connectors
+      responses:
+        "200":
+          description: Connectors catalog
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ConnectorList" }
+  /api/v1/connectors/{id}/test:
+    post:
+      tags: [Connectors]
+      summary: Test connector configuration
+      parameters:
+        - $ref: "#/components/parameters/IdPathParam"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/ConnectorTestRequest" }
+      responses:
+        "200":
+          description: Test result
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ConnectorTestResponse" }
+  /api/v1/feed:
+    get:
+      tags: [Feed]
+      summary: Recent events
+      parameters:
+        - in: query
+          name: cursor
+          schema: { type: string }
+        - in: query
+          name: limit
+          schema: { type: integer, minimum: 1, maximum: 200, default: 50 }
+      responses:
+        "200":
+          description: Paginated events
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/PaginatedEvents" }
+  /api/v1/feed/stream:
+    get:
+      tags: [Feed]
+      summary: Real-time feed subscription (SSE)
+      responses:
+        "200":
+          description: text/event-stream
+          content:
+            text/event-stream:
+              schema:
+                type: string
+                description: Server-Sent Events stream
+  /api/v1/users/{id}/profile:
+    get:
+      tags: [Users]
+      summary: Get user profile
+      parameters:
+        - $ref: "#/components/parameters/IdPathParam"
+      responses:
+        "200":
+          description: User profile
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/User" }
+  /api/v1/follows:
+    post:
+      tags: [Feed]
+      summary: Follow/unfollow dataset
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/FollowToggleRequest" }
+      responses:
+        "200":
+          description: Follow state
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/FollowState" }
+  /api/v1/search/suggestions:
+    get:
+      tags: [Search]
+      summary: Autocomplete suggestions
+      parameters:
+        - in: query
+          name: q
+          required: true
+          schema: { type: string }
+      responses:
+        "200":
+          description: Suggestions
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Suggestions" }
+
+components:
+  securitySchemes:
+    oauth2:
+      type: oauth2
+      flows:
+        authorizationCode:
+          authorizationUrl: https://auth.databooks.local/authorize
+          tokenUrl: https://auth.databooks.local/token
+          scopes:
+            openid: OpenID Connect scope
+            profile: Basic profile
+            email: Email address
+  parameters:
+    IdPathParam:
+      name: id
+      in: path
+      required: true
+      schema: { type: string, format: uuid }
+  schemas:
+    UUID:
+      type: string
+      format: uuid
+    Visibility:
+      type: string
+      enum: [public, internal, private]
+    PlatformType:
+      type: string
+      enum: [snowflake, databricks, bigquery, redshift]
+    DatasetBase:
+      type: object
+      properties:
+        id: { $ref: "#/components/schemas/UUID" }
+        name: { type: string }
+        description: { type: string }
+        tags:
+          type: array
+          items: { type: string }
+        owner_id: { $ref: "#/components/schemas/UUID" }
+        org_id: { $ref: "#/components/schemas/UUID" }
+        source_type: { type: string }
+        source_metadata_json:
+          type: object
+          description: Arbitrary metadata; no raw secrets
+        visibility: { $ref: "#/components/schemas/Visibility" }
+        created_at: { type: string, format: date-time }
+        updated_at: { type: string, format: date-time }
+    Dataset: { allOf: [ { $ref: "#/components/schemas/DatasetBase" } ] }
+    DatasetCreate:
+      type: object
+      required: [name, description, owner_id, org_id, source_type, source_metadata_json, visibility]
+      properties:
+        name: { type: string }
+        description: { type: string }
+        tags:
+          type: array
+          items: { type: string }
+        owner_id: { $ref: "#/components/schemas/UUID" }
+        org_id: { $ref: "#/components/schemas/UUID" }
+        source_type: { type: string }
+        source_metadata_json: { type: object }
+        visibility: { $ref: "#/components/schemas/Visibility" }
+    DatasetUpdate:
+      type: object
+      properties:
+        name: { type: string }
+        description: { type: string }
+        tags:
+          type: array
+          items: { type: string }
+        visibility: { $ref: "#/components/schemas/Visibility" }
+        source_metadata_json: { type: object }
+    PaginatedDatasets:
+      type: object
+      properties:
+        page: { type: integer }
+        per_page: { type: integer }
+        total: { type: integer }
+        data:
+          type: array
+          items: { $ref: "#/components/schemas/Dataset" }
+    User:
+      type: object
+      properties:
+        id: { $ref: "#/components/schemas/UUID" }
+        name: { type: string }
+        email: { type: string, format: email }
+        platform_profile_id: { $ref: "#/components/schemas/UUID" }
+        org_id: { $ref: "#/components/schemas/UUID" }
+        role: { type: string }
+        created_at: { type: string, format: date-time }
+    Connector:
+      type: object
+      properties:
+        id: { $ref: "#/components/schemas/UUID" }
+        type: { type: string }
+        capability_flags:
+          type: array
+          items: { type: string }
+        config_schema: { type: object }
+    ConnectorList:
+      type: object
+      properties:
+        data:
+          type: array
+          items: { $ref: "#/components/schemas/Connector" }
+    ConnectorTestRequest:
+      type: object
+      properties:
+        config: { type: object }
+      required: [config]
+    ConnectorTestResponse:
+      type: object
+      properties:
+        ok: { type: boolean }
+        error: { type: string, nullable: true }
+    ConnectRequest:
+      type: object
+      properties:
+        target_platform_type: { $ref: "#/components/schemas/PlatformType" }
+        options: { type: object }
+    ConnectResponse:
+      type: object
+      properties:
+        platform: { $ref: "#/components/schemas/PlatformType" }
+        payload:
+          type: object
+          properties:
+            snippet: { type: string }
+            artifacts:
+              type: array
+              items:
+                type: object
+                properties:
+                  type: { type: string, enum: [sql, cli, python, config] }
+                  content: { type: string }
+            connection_test:
+              type: object
+              properties:
+                ok: { type: boolean }
+                message: { type: string, nullable: true }
+    JobAccepted:
+      type: object
+      properties:
+        job_id: { $ref: "#/components/schemas/UUID" }
+        status: { type: string, enum: [accepted] }
+    Event:
+      type: object
+      properties:
+        id: { $ref: "#/components/schemas/UUID" }
+        type:
+          type: string
+          enum: [dataset.published, dataset.refreshed, dataset.schema.changed, dataset.connected, user.followed, contract.signed]
+        payload_json: { type: object }
+        actor_id: { $ref: "#/components/schemas/UUID" }
+        dataset_id: { $ref: "#/components/schemas/UUID", nullable: true }
+        created_at: { type: string, format: date-time }
+    PaginatedEvents:
+      type: object
+      properties:
+        cursor: { type: string, nullable: true }
+        data:
+          type: array
+          items: { $ref: "#/components/schemas/Event" }
+    FollowToggleRequest:
+      type: object
+      properties:
+        dataset_id: { $ref: "#/components/schemas/UUID" }
+        follow: { type: boolean }
+      required: [dataset_id, follow]
+    FollowState:
+      type: object
+      properties:
+        dataset_id: { $ref: "#/components/schemas/UUID" }
+        following: { type: boolean }
+    Suggestions:
+      type: object
+      properties:
+        suggestions:
+          type: array
+          items: { type: string }
+
+

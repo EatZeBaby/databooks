@@ -1,0 +1,11 @@
+fastapi==0.117.1
+uvicorn[standard]==0.37.0
+pydantic==2.11.9
+pystache==0.6.8
+orjson==3.11.3
+SQLAlchemy==2.0.43
+asyncpg==0.30.0
+python-dotenv==1.1.1
+databricks-sdk==0.67.0
+greenlet==3.2.4
+snowflake-connector-python==3.17.4
